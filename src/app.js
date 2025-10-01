@@ -50,19 +50,32 @@ io.on("connection", (socket) => {
   });
 
   socket.on("kickOut", (userToKick) => {
-    for (let id in connectedUsers) {
-      if (connectedUsers[id] === userToKick) {
-        io.to(id).emit("kickedOut", { message: "You have been kicked out." });
-        const userSocket = io.sockets.sockets.get(id);
-        if (userSocket) {
-          userSocket.disconnect(true);
-        }
-        delete connectedUsers[id];
-        break;
-      }
+  console.log("Kick request received for:", userToKick);
+
+  // Find all socket IDs that match the username (case-insensitive)
+  const targets = Object.entries(connectedUsers).filter(
+    ([id, name]) => name.toLowerCase() === userToKick.toLowerCase()
+  );
+
+  if (targets.length === 0) {
+    console.log("No user found with username:", userToKick);
+    return;
+  }
+
+  targets.forEach(([id, name]) => {
+    const userSocket = io.sockets.sockets.get(id);
+    if (userSocket) {
+      userSocket.emit("kickedOut", { message: "You have been kicked out." });
+      userSocket.disconnect(true);
+      console.log("User kicked:", name, id);
     }
-    io.emit("participantsUpdate", Object.values(connectedUsers));
+    delete connectedUsers[id];
   });
+
+  // Notify remaining users (or teacher) about updated participants
+  io.emit("participantsUpdate", Object.values(connectedUsers));
+});
+
 
   socket.on("joinChat", ({ username }) => {
     connectedUsers[socket.id] = username;
