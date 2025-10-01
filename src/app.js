@@ -29,7 +29,10 @@ mongoose.connect(DB, {
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "https://project-live-polling-f.vercel.app",
+    origin: [
+      "https://project-live-polling-8a5gaoesx-khuhsiims-projects.vercel.app",
+      "http://localhost:5173" // optional, for local dev
+    ],
     methods: ["GET", "POST"],
     credentials: true,
   },
