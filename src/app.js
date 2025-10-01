@@ -17,19 +17,14 @@ app.use(express.json());
 
 const port = process.env.PORT || 3000;
 
-const DB =
-  process.env.NODE_ENV === "production"
-    ? process.env.MONGODB_URL
-    : "mongodb://localhost:27017/intevuePoll";
+const DB = process.env.MONGO_URI;
 
-mongoose
-  .connect(DB)
-  .then(() => {
-    console.log("Connected to MongoDB");
-  })
-  .catch((e) => {
-    console.error("Failed to connect to MongoDB:", e);
-  });
+mongoose.connect(DB, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log("Connected to MongoDB Atlas"))
+.catch((e) => console.error("Failed to connect to MongoDB Atlas:", e));
 
 const server = http.createServer(app);
 const io = new Server(server, {
