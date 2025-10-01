@@ -29,14 +29,12 @@ mongoose.connect(DB, {
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: [
-      "https://project-live-polling-dekhe1dgc-khuhsiims-projects.vercel.app",
-      "http://localhost:5173"
-    ],
+    origin: "*", // allow any origin
     methods: ["GET", "POST"],
     credentials: true,
   },
 });
+
 
 
 let votes = {};
