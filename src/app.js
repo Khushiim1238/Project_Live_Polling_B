@@ -27,16 +27,25 @@ mongoose.connect(DB, {
 .catch((e) => console.error("Failed to connect to MongoDB Atlas:", e));
 
 const server = http.createServer(app);
+const allowedOrigins = [
+  "https://project-live-polling-dekhe1dgc-khuhsiims-projects.vercel.app",
+  "http://localhost:5173"
+];
+
 const io = new Server(server, {
   cors: {
-    origin: [
-      "https://project-live-polling-8a5gaoesx-khuhsiims-projects.vercel.app",
-      "http://localhost:5173" // optional, for local dev
-    ],
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS not allowed"));
+      }
+    },
     methods: ["GET", "POST"],
     credentials: true,
   },
 });
+
 
 let votes = {};
 let connectedUsers = {};
